@@ -12,6 +12,7 @@ TARGET = db_program
 
 SRC = src/main.c	\
 	  src/tableline.c	\
+	  src/binarytree.c	\
 
 INC = includes/
 

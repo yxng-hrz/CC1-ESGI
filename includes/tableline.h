@@ -4,9 +4,8 @@
 ** tableline.h
 */
 
-#ifndef TABLE_H
-#define TABLE_H
-
+#ifndef TABLELINE_H
+#define TABLELINE_H
 
 #include <stdio.h>
 #include <stdlib.h>
