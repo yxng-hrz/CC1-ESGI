@@ -21,7 +21,7 @@ typedef struct
 typedef struct
 {
     Row* rows;
-    int num_rows;
+    int row_increment;
 } Table;
 
 Table* table_crea();
