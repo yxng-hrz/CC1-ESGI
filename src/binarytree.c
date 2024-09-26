@@ -22,3 +22,20 @@ Node* binary_inser(Node* root, Row row)
     }
     return (root);
 }
+
+void free_binarytree(Node* root)
+{
+    if (root != 0) {
+        free_btree(root->gauche);
+        free_btree(root->droite);
+        free(root);
+    }
+}
+
+void binary_del(Node* root, int id)
+{
+}
+
+void binary_search(Node* root, int id)
+{
+}
