@@ -1,28 +1,31 @@
 ##
 ## ESGI, 2024
 ## File description:
-## authent
+## Makefile
 ##
 
-SRC	=	src/main.c	\
+CC = gcc
 
-OBJ	=	$(SRC:.c=.o)
+CFLAGS = -Wall -Wextra -g
 
-CFLAGS	+=	-Wall -Wextra -g3 -I ./includes
+TARGET = db_program
 
-NAME	=	CCGuillaumeHouriez
+SRC = src/main.c	\
+	  src/tableline.c	\
 
-$(NAME):	$(OBJ)
-	gcc -o $(NAME) $(OBJ)
+INC = includes/
 
-all:	$(NAME)
+all: $(TARGET)
+
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -I$(INC) -o $(TARGET) $(SRC)
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(TARGET)
 
-fclean:	clean
-	rm -f $(NAME)
+re: clean all
 
-re:	fclean all
+.PHONY: all clean re
 
-.PHONY:	all clean fclean re
+fclean: clean
+	rm -f $(TARGET)
