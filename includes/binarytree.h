@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "tableline.h"
 
 typedef struct Node
 {

@@ -12,6 +12,8 @@ TARGET = db_program
 SRC = src/main.c	\
 	  src/tableline.c	\
 	  src/binarytree.c	\
+	  src/sqlhandler.c	\
+	  src/pers_data.c	\
 
 INC = includes/
 
