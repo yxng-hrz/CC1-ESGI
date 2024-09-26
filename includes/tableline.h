@@ -1,11 +1,16 @@
 /*
 ** ESGI, 2024
 ** File description:
-** table.h
+** tableline.h
 */
 
 #ifndef TABLE_H
 #define TABLE_H
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct
 {
