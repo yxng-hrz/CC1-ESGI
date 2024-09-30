@@ -19,3 +19,18 @@ void persistence_save(Table* table, const char* filename)
     printf("Saved %s\n", filename);
 }
 
+Table* persistence_load(const char* filename)
+{
+    FILE* file = fopen(filename, "rb");
+    if (!file) {
+        perror("NOt the good file");
+        return 0;
+    }
+    Table* table = create_table();
+    fread(&table->row_increment, sizeof(int), 1, file);
+    table->rows = (Row*)malloc(sizeof(Row) * table->row_increment);
+    fread(table->rows, sizeof(Row), table->row_increment, file);
+    fclose(file);
+    printf("Load %s\n", filename);
+    return (table);
+}
