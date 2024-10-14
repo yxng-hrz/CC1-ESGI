@@ -21,6 +21,6 @@ typedef struct Node
 void binary_search(Node* root, int id);
 void free_binarytree(Node* root);
 Node* binary_inser(Node* root, Row row);
-void binary_del(Node* root, int id);
+Node* binary_del(Node* root, int id);
 
 #endif
