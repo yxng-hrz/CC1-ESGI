@@ -12,8 +12,8 @@ void cmd_insert(Node** root, Table* table, int id, const char* name)
 {
     Row new_row = { id, "" };
     strcpy(new_row.name, name);
-    insert_row(table, new_row);
-    *root = insert(*root, new_row);
+    use_row(table, new_row);
+    *root = binary_inser(*root, new_row);
     printf("Inserted: ID = %d, Name = %s\n", id, name);
 }
 
@@ -33,6 +33,3 @@ void cmd_select(Node* root, int id)
     printf("ID %d not found.\n", id);
 }
 
-void cmd_delete(Node** root, int id)
-{
-}
