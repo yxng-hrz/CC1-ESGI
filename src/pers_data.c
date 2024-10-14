@@ -26,7 +26,7 @@ Table* persistence_load(const char* filename)
         perror("NOt the good file");
         return 0;
     }
-    Table* table = create_table();
+    Table* table = table_crea();
     fread(&table->row_increment, sizeof(int), 1, file);
     table->rows = (Row*)malloc(sizeof(Row) * table->row_increment);
     fread(table->rows, sizeof(Row), table->row_increment, file);

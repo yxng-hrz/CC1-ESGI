@@ -19,8 +19,7 @@ void cmd_insert(Node** root, Table* table, int id, const char* name)
 
 void cmd_select(Node* root, int id)
 {
-    Node* current = root;
-    while (current != NULL) {
+    for (Node* current = root; current != NULL; ) {
         if (id == current->row.id) {
             printf("Found: ID = %d, Name = %s\n", current->row.id, current->row.name);
             return;
@@ -33,3 +32,13 @@ void cmd_select(Node* root, int id)
     printf("ID %d not found.\n", id);
 }
 
+void cmd_delete(Node** root, int id)
+{
+    if (*root == 0) {
+        printf("ID %d not found for deletion.\n", id);
+        return;
+    }
+    // Ici on stocke la racine retournée par delete
+    *root = binary_del(*root, id);
+    printf("Deleted ID = %d from the tree.\n", id);
+}
