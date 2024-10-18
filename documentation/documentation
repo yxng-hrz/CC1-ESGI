@@ -1,0 +1,268 @@
+Voici une vraie documentation pour ton projet, avec des explications approfondies du code, de sa structure, de son fonctionnement, et des parties importantes.
+
+### `DOCUMENTATION.md`
+
+# 📚 Documentation du Projet de Base de Données en C avec Arbre Binaire
+
+## 1. Introduction
+
+Ce projet implémente une base de données simple en C, utilisant un **arbre binaire** comme structure pour stocker, rechercher et manipuler des enregistrements. Le programme permet d'exécuter des commandes SQL basiques telles que `INSERT`, `SELECT`, et `DELETE`, tout en assurant la **persistance des données** sur disque. 
+
+Le but principal du projet est d'illustrer comment structurer un programme en C avec des **structures de données avancées** (arbre binaire) et d'assurer une gestion efficace de la mémoire et des fichiers.
+
+---
+
+## 2. Structure du Code
+
+Le projet est organisé autour de plusieurs fichiers sources (.c) et d'en-tête (.h) pour faciliter la séparation des responsabilités :
+
+- **`main.c`** : Le point d'entrée du programme. Il exécute les différentes commandes SQL sur la base de données et gère l'interaction avec l'utilisateur.
+- **`table.c` et `table.h`** : Définit les structures de données pour la table et les lignes de la base de données. Gère les opérations sur la table.
+- **`btree.c` et `btree.h`** : Implémente l'arbre binaire de recherche pour stocker et manipuler les enregistrements.
+- **`sql.c` et `sql.h`** : Contient l'implémentation des commandes SQL (`INSERT`, `SELECT`, `DELETE`), ainsi qu'une fonction générale pour exécuter des requêtes SQL.
+- **`persistence.c` et `persistence.h`** : Gère la persistance des données sur disque (sauvegarde et chargement depuis un fichier binaire).
+
+---
+
+## 3. Fonctionnement du Code
+
+### 3.1. `main.c` - Point d'entrée
+
+Le fichier `main.c` est le point de départ du programme. Il exécute plusieurs commandes SQL et gère la persistance des données.
+
+#### Fonctionnement :
+1. **Chargement ou création de la table** : Le programme tente de charger une table existante depuis le fichier `database.bin`. Si le fichier n'existe pas, il crée une nouvelle table vide.
+   
+   ```c
+   Table* table = load_table("database.bin");
+   if (table == NULL) {
+       table = create_table();
+   }
+   ```
+
+2. **Racine de l'arbre binaire** : Un arbre binaire est initialisé pour stocker les enregistrements.
+
+   ```c
+   Node* root = NULL;
+   ```
+
+3. **Exécution des commandes SQL** : Des exemples d'insertion, de recherche et de suppression sont exécutés à l'aide de la fonction `sql_execute`. Cette fonction centralise l'exécution des requêtes SQL et gère les trois opérations : `INSERT`, `SELECT`, et `DELETE`.
+
+   ```c
+   sql_execute(&root, table, "i", 1, "Alice");
+   sql_execute(&root, table, "s", 2, NULL);
+   sql_execute(&root, table, "d", 2, NULL);
+   ```
+
+4. **Persistance des données** : La table est sauvegardée à la fin du programme, ce qui permet de récupérer les données lors de la prochaine exécution.
+
+   ```c
+   save_table(table, "database.bin");
+   ```
+
+5. **Libération de la mémoire** : Les ressources allouées dynamiquement pour la table et l'arbre sont libérées avant la fin du programme.
+
+   ```c
+   free_table(table);
+   free_btree(root);
+   ```
+
+---
+
+### 3.2. `table.c` - Gestion de la Table
+
+Ce fichier définit la structure d'une table et d'une ligne, ainsi que les fonctions associées pour gérer les opérations sur la table.
+
+#### Structures :
+
+- **`Row`** : Structure qui représente une ligne dans la table, avec un identifiant (`id`) et un nom (`name`).
+  
+  ```c
+  typedef struct {
+      int id;
+      char name[50];
+  } Row;
+  ```
+
+- **`Table`** : Structure qui contient un tableau dynamique de lignes (`rows`) et un compteur (`num_rows`) pour suivre le nombre de lignes.
+
+  ```c
+  typedef struct {
+      Row* rows;
+      int num_rows;
+  } Table;
+  ```
+
+#### Fonctions importantes :
+
+- **`create_table()`** : Crée une nouvelle table vide.
+  
+  ```c
+  Table* create_table() {
+      Table* table = (Table*)malloc(sizeof(Table));
+      table->rows = NULL;
+      table->num_rows = 0;
+      return table;
+  }
+  ```
+
+- **`insert_row()`** : Ajoute une ligne dans la table en allouant dynamiquement de la mémoire pour stocker les nouvelles données.
+
+  ```c
+  void insert_row(Table* table, Row row) {
+      table->rows = (Row*)realloc(table->rows, sizeof(Row) * (table->num_rows + 1));
+      table->rows[table->num_rows] = row;
+      table->num_rows++;
+  }
+  ```
+
+- **`free_table()`** : Libère la mémoire allouée pour la table et ses lignes.
+
+  ```c
+  void free_table(Table* table) {
+      free(table->rows);
+      free(table);
+  }
+  ```
+
+---
+
+### 3.3. `btree.c` - Arbre Binaire de Recherche
+
+L'arbre binaire de recherche permet de stocker les enregistrements de manière ordonnée, facilitant les opérations de recherche, d'insertion et de suppression.
+
+#### Structure :
+
+- **`Node`** : Structure qui représente un nœud de l'arbre binaire. Chaque nœud contient une ligne (`Row`), ainsi que des pointeurs vers ses sous-arbres gauche et droit.
+
+  ```c
+  typedef struct Node {
+      Row row;
+      struct Node* left;
+      struct Node* right;
+  } Node;
+  ```
+
+#### Fonctions importantes :
+
+- **`insert()`** : Insère un nouvel enregistrement dans l'arbre binaire en le plaçant à la bonne position selon l'ID.
+
+  ```c
+  Node* insert(Node* root, Row row) {
+      if (root == NULL) {
+          Node* new_node = (Node*)malloc(sizeof(Node));
+          new_node->row = row;
+          new_node->left = NULL;
+          new_node->right = NULL;
+          return new_node;
+      }
+      if (row.id < root->row.id) {
+          root->left = insert(root->left, row);
+      } else if (row.id > root->row.id) {
+          root->right = insert(root->right, row);
+      }
+      return root;
+  }
+  ```
+
+- **`delete()`** : Supprime un enregistrement de l'arbre en respectant les règles d'un arbre binaire (gestion des nœuds avec 0, 1 ou 2 enfants).
+
+  ```c
+  Node* delete(Node* root, int id) {
+      if (root == NULL) {
+          return NULL;
+      }
+
+      if (id < root->row.id) {
+          root->left = delete(root->left, id);
+      } else if (id > root->row.id) {
+          root->right = delete(root->right, id);
+      } else {
+          if (root->left == NULL) {
+              Node* temp = root->right;
+              free(root);
+              return temp;
+          } else if (root->right == NULL) {
+              Node* temp = root->left;
+              free(root);
+              return temp;
+          } else {
+              Node* temp = find_min(root->right);
+              root->row = temp->row;
+              root->right = delete(root->right, temp->row.id);
+          }
+      }
+      return root;
+  }
+  ```
+
+- **`search()`** : Recherche un enregistrement dans l'arbre binaire en fonction de son ID.
+
+---
+
+### 3.4. `sql.c` - Gestion des Commandes SQL
+
+Le fichier `sql.c` gère l'exécution des commandes SQL telles que `INSERT`, `SELECT` et `DELETE`.
+
+#### `sql_execute()` :
+Cette fonction gère l'exécution des commandes SQL en fonction du premier caractère de la commande (`i` pour `INSERT`, `s` pour `SELECT`, `d` pour `DELETE`).
+
+```c
+void sql_execute(Node** root, Table* table, const char* command, int id, const char* name) {
+    switch (command[0]) {
+        case 'i':
+            insert_sql(root, table, id, name);
+            break;
+        case 's':
+            select_sql(*root, id);
+            break;
+        case 'd':
+            delete_sql(root, id);
+            break;
+        default:
+            printf("Unknown command: %s\n", command);
+            break;
+    }
+}
+```
+
+---
+
+### 3.5. `persistence.c` - Persistance des Données
+
+Ce fichier gère la sauvegarde et le chargement des données depuis un fichier binaire.
+
+- **`save_table()`** : Sauvegarde la table dans un fichier binaire.
+
+  ```c
+  void save_table(Table* table, const char* filename) {
+      FILE* file = fopen(filename, "wb");
+      fwrite(&table->num_rows, sizeof(int),
+
+ 1, file);
+      fwrite(table->rows, sizeof(Row), table->num_rows, file);
+      fclose(file);
+  }
+  ```
+
+- **`load_table()`** : Charge la table depuis un fichier binaire.
+
+  ```c
+  Table* load_table(const char* filename) {
+      FILE* file = fopen(filename, "rb");
+      Table* table = create_table();
+      fread(&table->num_rows, sizeof(int), 1, file);
+      table->rows = (Row*)malloc(sizeof(Row) * table->num_rows);
+      fread(table->rows, sizeof(Row), table->num_rows, file);
+      fclose(file);
+      return table;
+  }
+  ```
+
+---
+
+## 4. Conclusion
+
+Ce projet illustre comment structurer une application C complexe en séparant les responsabilités à travers plusieurs fichiers et en utilisant des structures de données avancées comme les **arbres binaires**. Le programme est capable de gérer plusieurs opérations SQL simples tout en maintenant une persistance des données sur disque, ce qui le rend utile pour des démonstrations ou des extensions futures dans des environnements de plus grande envergure.
+
+--- 
