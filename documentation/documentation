@@ -12,6 +12,11 @@ Le but principal du projet est d'illustrer comment structurer un programme en C 
 
 ## 2. Structure du Code
 
+Makefile : Utilisation de couleurs, make, make re, make fclean et des règles : 
+-Wall : active les avertissements standards pour détection d’erreurs courantes.
+-Wextra : ajoute des avertissements supplémentaires pour repérer des erreurs subtiles.
+-g : inclut les informations de débogage pour utilisation avec des outils comme gdb.
+
 Le projet est organisé autour de plusieurs fichiers sources (.c) et d'en-tête (.h) pour faciliter la séparation des responsabilités :
 
 - **`main.c`** : Le point d'entrée du programme. Il exécute les différentes commandes SQL sur la base de données et gère l'interaction avec l'utilisateur.
@@ -261,6 +266,6 @@ Ce fichier gère la sauvegarde et le chargement des données depuis un fichier b
 
 ## 4. Conclusion
 
-Ce projet illustre comment structurer une application C complexe en séparant les responsabilités à travers plusieurs fichiers et en utilisant des structures de données avancées comme les **arbres binaires**. Le programme est capable de gérer plusieurs opérations SQL simples tout en maintenant une persistance des données sur disque, ce qui le rend utile pour des démonstrations ou des extensions futures dans des environnements de plus grande envergure.
+Ce projet illustre comment structurer une application C complexe en séparant les responsabilités à travers plusieurs fichiers et en utilisant des structures de données avancées comme les **arbres binaires**. Le programme est capable de gérer plusieurs opérations SQL simples tout en maintenant une persistance des données sur disque.
 
 --- 
